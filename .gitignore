@@ -46,7 +46,9 @@ web_modules/
 
 # TypeScript cache
 *.tsbuildinfo
-.kiro/
+.kiro/*
+!.kiro/specs/
+!.kiro/specs/**
 
 # Optional npm cache directory
 .npm
@@ -73,6 +75,9 @@ web_modules/
 
 # Terraform — arquivos sensíveis e de estado
 *.tfvars
+.terraform/
+*.tfstate
+*.tfstate.*
 terraform.tfstate
 terraform.tfstate.backup
 

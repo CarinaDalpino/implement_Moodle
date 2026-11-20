@@ -1,0 +1,5 @@
+# Copie para terraform.tfvars (ignorado pelo Git) e preencha.
+# Nunca commite o terraform.tfvars real.
+
+ssh_allowed_cidr = "203.0.113.10/32" # troque pelo seu IP: curl -s https://checkip.amazonaws.com
+db_password      = "TROQUE-POR-UMA-SENHA-FORTE"

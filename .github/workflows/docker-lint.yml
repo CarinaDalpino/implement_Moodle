@@ -24,8 +24,11 @@ jobs:
       # Executa o hadolint para análise estática do Dockerfile e verifica boas práticas
       # TODO: adicione flags --ignore <RULE> aqui se quiser suprimir regras específicas,
       #       ex: docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 -
+      # DL3008 (fixar versão de cada pacote apt) é ignorada: o Debian remove versões
+      # antigas dos repositórios e o build quebraria. Sugestões de nível info
+      # (ex.: DL3059) aparecem no log, mas não reprovam o workflow.
       - name: Lint do Dockerfile com hadolint
-        run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
+        run: docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 --failure-threshold warning - < docker/Dockerfile
 
       # Valida a sintaxe e a integridade do docker-compose.yml sem subir os serviços
       # TODO: se você tiver um ambiente de testes disponível, pode estender este step

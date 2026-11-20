@@ -1,3 +1,4 @@
+# TODO: Em producao, ler db_password do AWS Secrets Manager em vez de terraform.tfvars.
 variable "aws_region" {
   description = "Regiao AWS. O Learner Lab opera somente em us-east-1."
   type        = string

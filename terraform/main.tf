@@ -1,3 +1,4 @@
+# TODO: Configurar backend remoto (S3 + DynamoDB para lock) para compartilhar o estado com seguranca.
 module "networking" {
   source = "./modules/networking"
 

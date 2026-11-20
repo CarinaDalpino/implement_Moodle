@@ -1,3 +1,4 @@
+# TODO: Expor a URL do Load Balancer quando a aplicacao passar a usar ALB + Auto Scaling.
 output "vpc_id" {
   description = "ID da VPC."
   value       = module.networking.vpc_id

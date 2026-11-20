@@ -1,4 +1,5 @@
 #!/bin/bash
+# TODO: Buscar a senha do banco no SSM Parameter Store no boot em vez de recebe-la via templatefile.
 # Executado pelo cloud-init no primeiro boot da EC2 (Amazon Linux 2023).
 # Instala Docker e Compose v2, constroi a imagem do Moodle e sobe o container.
 # Nota: o templatefile do Terraform interpreta a sintaxe de cifrao com chaves,

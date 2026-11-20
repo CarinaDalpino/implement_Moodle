@@ -1,3 +1,4 @@
+# TODO: Remover o output db_password quando a senha vier do Secrets Manager.
 output "db_address" {
   description = "Hostname do RDS (sem porta)."
   value       = aws_db_instance.main.address

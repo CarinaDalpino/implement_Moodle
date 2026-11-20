@@ -1,3 +1,4 @@
+# TODO: Expor o ID do security group do ALB quando ele for criado.
 output "vpc_id" {
   description = "ID da VPC."
   value       = aws_vpc.main.id

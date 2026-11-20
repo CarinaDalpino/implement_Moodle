@@ -1,3 +1,4 @@
+# TODO: Em producao, adicionar NAT Gateway e mover a EC2 para subnet privada atras de um ALB.
 data "aws_availability_zones" "available" {
   state = "available"
 }

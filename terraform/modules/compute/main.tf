@@ -1,3 +1,4 @@
+# TODO: Trocar aws_instance por Launch Template + Auto Scaling Group para alta disponibilidade.
 # Instance profile pre-existente do Learner Lab. Nao criamos nenhum recurso IAM.
 data "aws_iam_instance_profile" "lab" {
   name = var.instance_profile_name

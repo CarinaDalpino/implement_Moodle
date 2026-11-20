@@ -1,3 +1,4 @@
+# TODO: Expor o nome do Auto Scaling Group quando a EC2 unica for substituida.
 output "public_ip" {
   description = "IP publico da EC2."
   value       = aws_instance.moodle.public_ip

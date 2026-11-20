@@ -1,3 +1,4 @@
+# TODO: Receber o ARN de um segredo do Secrets Manager em vez da senha em texto.
 variable "project_name" {
   description = "Prefixo usado no nome dos recursos."
   type        = string

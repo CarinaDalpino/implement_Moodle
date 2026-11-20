@@ -1,3 +1,4 @@
+# TODO: Parametrizar instance_class e allocated_storage para ambientes maiores.
 variable "project_name" {
   description = "Prefixo usado no nome dos recursos."
   type        = string

@@ -1,3 +1,4 @@
+# TODO: Parametrizar a quantidade de AZs para permitir mais de duas subnets por tipo.
 variable "project_name" {
   description = "Prefixo usado no nome dos recursos."
   type        = string

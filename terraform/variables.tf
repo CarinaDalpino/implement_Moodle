@@ -19,6 +19,8 @@ variable "vpc_cidr" {
 variable "ssh_allowed_cidr" {
   description = "CIDR autorizado a acessar a EC2 por SSH (ex.: 203.0.113.10/32). Nao use 0.0.0.0/0."
   type        = string
+  # sensitive esconde o IP pessoal na saida do plan e no comentario do PR
+  sensitive = true
 
   validation {
     condition     = var.ssh_allowed_cidr != "0.0.0.0/0"

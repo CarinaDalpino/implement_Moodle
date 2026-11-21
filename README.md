@@ -1,194 +1,212 @@
 # Moodle Docker AWS Challenge
 
-Este repositório é um **template educacional** para um desafio que combina containerização com Docker, infraestrutura como código com Terraform e deploy na nuvem AWS usando o ambiente AWS Learn Lab. O template entrega um ambiente Docker local de referência rodando Moodle 4.x com PostgreSQL 15, além do scaffolding de arquivos, documentação, pipelines de CI/CD e scripts de validação. Os módulos Terraform funcionais e o desenho técnico de arquitetura são **entregas obrigatórias do aluno**.
+Solução do desafio **Moodle Docker AWS** (DevOps, ADS UniFAAT, 2026.2), feita a partir do template [AleTavares/implement_Moodle](https://github.com/AleTavares/implement_Moodle). O Moodle 4.1 roda localmente com Docker Compose (Moodle + PostgreSQL 15) e na AWS, numa EC2 com banco RDS PostgreSQL 15. Toda a infraestrutura AWS é criada com Terraform no AWS Academy Learner Lab.
 
-→ **[Leia o desafio completo](CHALLENGE.md)**
+→ [Desafio completo](CHALLENGE.md) · [Documento de arquitetura](docs/architecture-design.md) · [Spec do Kiro (networking)](.kiro/specs/networking/)
 
 
 ## Pré-requisitos
 
-Antes de começar, verifique se você tem as seguintes ferramentas instaladas e configuradas:
-
-| Ferramenta | Versão mínima | Observação |
+| Ferramenta | Versão mínima | Para quê |
 |---|---|---|
-| [Docker Engine](https://docs.docker.com/get-docker/) | 24.x | Inclui o Docker Compose v2 (`docker compose`) |
-| [Terraform](https://developer.hashicorp.com/terraform/install) | 1.5+ | Provider AWS `~> 5.0` |
-| [AWS CLI](https://aws.amazon.com/cli/) | 2.x | Para configurar as credenciais do Learn Lab |
-| [Git](https://git-scm.com/) | 2.x | Para clonar/forkar o template |
-| [Python](https://www.python.org/) | 3.8+ | Para rodar os testes (`pytest` + `hypothesis`) |
-| Conta AWS Learn Lab | — | Credenciais temporárias obtidas no portal AWS Academy |
+| [Docker Engine](https://docs.docker.com/get-docker/) | 24.x | Ambiente local. Inclui o Docker Compose v2 (`docker compose`) |
+| [Terraform](https://developer.hashicorp.com/terraform/install) | 1.5+ | Infraestrutura AWS (provider AWS `~> 5.0`) |
+| [AWS CLI](https://aws.amazon.com/cli/) | 2.x | Credenciais do Learner Lab |
+| [Git](https://git-scm.com/) | 2.x | Clonar o repositório |
+| [Python](https://www.python.org/) | 3.8+ | Testes (`pytest`, `hypothesis`, `pyyaml`) |
+| AWS Academy Learner Lab | — | Credenciais temporárias, região `us-east-1` |
 
-> O ambiente **AWS Learn Lab** fornece credenciais temporárias com permissões restritas (sem IAM, Route 53, ACM ou CloudFront). Consulte [`docs/aws-learn-lab-setup.md`](docs/aws-learn-lab-setup.md) para configurá-las.
-
+O Learner Lab fornece credenciais que expiram em cerca de 4 horas e não permite criar IAM, Route 53, ACM nem CloudFront. Veja [`docs/aws-learn-lab-setup.md`](docs/aws-learn-lab-setup.md).
 
 
 ## Estrutura do Repositório
 
 ```
 .
-├── .github/
-│   └── workflows/                       # Pipelines de CI/CD (GitHub Actions)
-│       ├── docker-lint.yml              #   - Lint do Dockerfile (hadolint)
-│       ├── health-check.yml             #   - Health check manual (workflow_dispatch)
-│       ├── terraform-plan.yml           #   - Stub: terraform plan (a implementar)
-│       └── terraform-validate.yml       #   - fmt-check + validate
-├── docker/                              # Ambiente Docker local de referência (funcional)
-│   ├── .env.example                     #   - Variáveis de ambiente documentadas
-│   ├── Dockerfile                       #   - Imagem Moodle customizada (extensões PHP)
-│   └── docker-compose.yml               #   - Orquestra Moodle + PostgreSQL 15
-├── docs/                                # Documentação do desafio
-│   ├── architecture-design-template.md  #   - Template do desenho técnico (entrega do aluno)
-│   ├── architecture.md                  #   - Arquitetura de referência (gabarito)
-│   ├── aws-learn-lab-setup.md           #   - Credenciais e limitações do Learn Lab
-│   ├── evaluation-rubric.md             #   - Rubrica de avaliação
-│   ├── img/                             #   - Imagens usadas na documentação
-│   ├── security-practices.md            #   - Boas práticas de segurança
-│   ├── terraform-guide.md               #   - Guia dos comandos Terraform
-│   └── troubleshooting.md              #   - Problemas comuns e soluções
-├── scripts/
-│   └── health-check.sh                  # Verificação automatizada do Moodle
-├── tests/                               # Testes de propriedade (pytest + Hypothesis)
-│   ├── conftest.py                      #   - Fixtures compartilhadas (repo_root)
-│   ├── test_architecture_template_sections.py
-│   ├── test_compose_no_hardcoded_creds.py
-│   ├── test_dockerfile_extensions.py
-│   ├── test_docs_exist.py
-│   ├── test_gitignore_patterns.py
-│   ├── test_health_check.py
-│   ├── test_terraform_module_structure.py
-│   ├── test_todo_comments.py
-│   └── test_workflow_step_comments.py
-├── .gitignore                           # Padrões de segurança (secrets, estado, etc.)
-├── CHALLENGE.md                         # Objetivos, entregas e critérios do desafio
-├── LICENSE                              # Licença do projeto
-├── pyproject.toml                       # Configuração do projeto e dependências de teste
-└── README.md                            # Este arquivo (ponto de entrada)
+├── .github/workflows/
+│   ├── docker-lint.yml              # hadolint no Dockerfile + validação do compose
+│   ├── health-check.yml             # health check manual contra uma URL
+│   ├── terraform-plan.yml           # terraform plan em cada PR, com comentário no PR
+│   └── terraform-validate.yml       # terraform fmt -check + validate
+├── .kiro/specs/networking/          # Spec do Kiro: requirements, design e tasks
+├── docker/                          # Ambiente local: Dockerfile, docker-compose.yml, .env.example
+├── docs/
+│   ├── architecture-design.md       # Documento de arquitetura da solução (entrega)
+│   ├── img/                         # Evidências (prints)
+│   └── ...                          # Guias do template
+├── scripts/health-check.sh          # Verifica se o Moodle está respondendo
+├── terraform/
+│   ├── versions.tf                  # Terraform >= 1.5, provider AWS ~> 5.0, região
+│   ├── main.tf                      # Liga os módulos networking → database → compute
+│   ├── variables.tf                 # Variáveis raiz (senha e IP do SSH são sensitive)
+│   ├── outputs.tf                   # vpc_id, ec2_public_dns, moodle_url, rds_endpoint
+│   ├── terraform.tfvars.example     # Modelo do terraform.tfvars (o real não vai para o Git)
+│   └── modules/
+│       ├── networking/              # VPC, 2 subnets públicas, 2 privadas, IGW, rotas, sg-app, sg-db
+│       ├── compute/                 # EC2 t3.micro, LabInstanceProfile, user_data.sh
+│       └── database/                # RDS PostgreSQL 15 db.t3.micro privado, subnet group
+└── tests/                           # Testes do repositório (pytest + Hypothesis)
 ```
-
-> **Nota:** o diretório `terraform/` **não** faz parte do template — você o cria como parte do desafio, instanciando os módulos `networking`, `compute` e `database`. Veja a seção [Infraestrutura AWS com Terraform](#infraestrutura-aws-com-terraform) e o [`CHALLENGE.md`](CHALLENGE.md).
-
 
 
 ## Ambiente Docker Local
 
-O template entrega um stack Docker funcional para você validar o Moodle localmente antes do deploy na AWS.
-
 ```bash
-# 1. Entre no diretório docker/
 cd docker
-
-# 2. Copie o arquivo de exemplo e preencha as senhas
-cp .env.example .env
-#    Edite .env e substitua os valores de exemplo (POSTGRES_PASSWORD, MOODLE_PASSWORD, etc.)
-
-# 3. Suba os contêineres (Moodle + PostgreSQL)
+cp .env.example .env          # ajuste as senhas; o .env real é ignorado pelo Git
 docker compose up -d
-
-# 4. Acesse o Moodle no navegador
-#    → http://localhost:8080
+docker compose ps             # db (healthy) e moodle (porta 8080)
 ```
 
-Comandos úteis para gerenciar o ambiente:
+Abra http://localhost:8080 e conclua o instalador web:
 
-```bash
-docker compose ps              # Verifica o status dos contêineres
-docker compose logs -f moodle  # Acompanha os logs do Moodle
-docker compose down            # Para e remove os contêineres
-docker compose down -v         # Para e remove os contêineres E os volumes (apaga os dados)
-```
-
-O `docker-compose.yml` mapeia a porta `8080` do host para a porta `80` do contêiner Moodle e garante que o Moodle só inicia após o PostgreSQL estar saudável (`depends_on: condition: service_healthy`). Os dados são persistidos em volumes nomeados (`db_data`, `moodle_data`, `moodle_www`).
-
-### Health Check
-
-Após subir o ambiente (local ou na AWS), valide se o Moodle está respondendo corretamente:
-
-```bash
-./scripts/health-check.sh http://localhost:8080
-# Para a instância EC2 na AWS, use o DNS público:
-# ./scripts/health-check.sh http://ec2-XX-XX-XX-XX.compute-1.amazonaws.com
-```
-
-O script realiza **3 verificações** em sequência, com até 3 tentativas (intervalo de 30s):
-
-| Verificação | O que testa |
+| Campo | Valor |
 |---|---|
-| (a) | HTTP 200 na URL raiz |
-| (b) | HTTP 200 em `/login/index.php` |
-| (c) | Presença da string `Moodle` no corpo da resposta |
+| Driver | PostgreSQL (native/pgsql) |
+| Host | `db` |
+| Base de dados / Usuário | `moodle` / `moodle` |
+| Senha | `POSTGRES_PASSWORD` do seu `.env` |
+| Porta | `5432` |
 
-**Interpretando a saída:**
+O Dockerfile instala a extensão PHP `pgsql`. Sem ela, o instalador só oferece MySQL.
 
-- **`exit 0`** com `[✓]`: Moodle saudável — as 3 verificações passaram.
-- **`exit 1`** com `[✗]` + diagnóstico: falhou após 3 tentativas. O script indica qual verificação específica falhou (`raiz`, `login` ou `conteudo`) e sugere comandos de troubleshooting (`docker compose logs`, `curl`, etc.).
+```bash
+docker compose logs -f moodle  # logs do Moodle
+docker compose down            # para os contêineres (mantém os volumes)
+docker compose down -v         # para e apaga os volumes (apaga os dados)
+```
 
+Os dados ficam nos volumes nomeados `db_data`, `moodle_data` e `moodle_www` e sobrevivem a `docker compose restart`.
 
 
 ## Infraestrutura AWS com Terraform
 
-O template **não** entrega os módulos Terraform funcionais — eles são sua tarefa no desafio. A estrutura esperada é composta por **3 módulos** que você cria dentro de `terraform/modules/`:
+### 1. Credenciais do Learner Lab
 
-| Módulo | Recursos a provisionar |
-|---|---|
-| **`networking`** | VPC, 1 subnet pública + 2 subnets privadas (AZs distintas), Internet Gateway, route tables, Security Group do EC2 (portas 80 e 22) e Security Group do RDS (porta 5432 a partir do SG do EC2) |
-| **`compute`** | Instância EC2 `t3.medium` (Amazon Linux 2023), IAM instance profile `LabRole` via **data source** (não criar `aws_iam_role`), `aws_key_pair`, e `user_data.sh` injetado via `templatefile()` |
-| **`database`** | `aws_db_subnet_group` (2 AZs privadas), `aws_db_instance` PostgreSQL 15 classe `db.t3.micro`, 20 GB, `publicly_accessible = false` |
+No Learner Lab, clique em **Start Lab**, depois em **AWS Details → AWS CLI: Show**, e cole o bloco em `~/.aws/credentials`. Confira:
 
-Restrições importantes do AWS Learn Lab: não use `aws_route53_*`, `aws_acm_*`, `aws_cloudfront_*` nem `aws_iam_user`. O DNS público do EC2 substitui o Route 53. Veja os detalhes em [`docs/aws-learn-lab-setup.md`](docs/aws-learn-lab-setup.md).
+```bash
+aws sts get-caller-identity
+```
 
-Para a sequência completa de comandos (`init`, `plan`, `apply`, `destroy`) e exemplos de saída esperada, consulte o **[Guia do Terraform](docs/terraform-guide.md)**.
+### 2. Variáveis
 
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars
+curl -s https://checkip.amazonaws.com      # seu IP público
+```
+
+Edite o `terraform.tfvars`:
+
+```hcl
+ssh_allowed_cidr = "SEU_IP/32"            # 0.0.0.0/0 é recusado pela validação
+db_password      = "SenhaForteComDozeCaracteres"
+```
+
+O `terraform.tfvars` está no `.gitignore`. As duas variáveis são `sensitive` e não aparecem na saída do `plan`.
+
+### 3. Init, validação e plano
+
+```bash
+terraform init
+terraform fmt -check -recursive
+terraform validate
+terraform plan        # Plan: 19 to add, 0 to change, 0 to destroy.
+```
+
+### 4. Apply
+
+```bash
+terraform apply
+```
+
+O RDS leva cerca de 7 minutos para ficar pronto. Depois disso, o `user_data.sh` da EC2 instala o Docker e o Compose v2, clona este repositório, constrói a imagem do Moodle e executa `docker compose up -d`. Isso leva mais uns 10 a 15 minutos na `t3.micro`.
+
+### 5. URL pública do Moodle
+
+```bash
+terraform output moodle_url      # http://ec2-x-x-x-x.compute-1.amazonaws.com
+terraform output rds_endpoint    # host:5432 do RDS
+```
+
+Abra a `moodle_url` e conclua o instalador com o driver **PostgreSQL**, o host do `rds_endpoint` (sem `:5432`), a base `moodle`, o usuário `moodle` e a senha do `terraform.tfvars`. Para confirmar que está tudo no ar:
+
+```bash
+../scripts/health-check.sh "$(terraform output -raw moodle_url)"
+```
+
+Para acompanhar o boot da EC2, o log fica em `/var/log/user-data.log`. Acesse com `ssh -i labsuser.pem ec2-user@<ec2_public_ip>`, usando a chave `vockey` do Learner Lab.
+
+### 6. Destroy
+
+```bash
+terraform destroy
+```
+
+Rode sempre ao terminar, para não consumir o crédito do Lab. O RDS está com `skip_final_snapshot = true`, então nada fica para trás.
 
 
 ## CI/CD
 
-O repositório inclui pipelines de GitHub Actions em `.github/workflows/`:
-
 | Workflow | Gatilho | O que faz |
 |---|---|---|
-| [`terraform-validate.yml`](.github/workflows/terraform-validate.yml) | `push` / `pull_request` em `main` | Executa `terraform fmt -check` e `terraform validate` (falha listando arquivos com problemas de formatação) |
-| [`docker-lint.yml`](.github/workflows/docker-lint.yml) | `push` / `pull_request` em `main` | Executa `hadolint` no `docker/Dockerfile` |
-| [`terraform-plan.yml`](.github/workflows/terraform-plan.yml) | `workflow_dispatch` | **Stub** com `# TODO:` — você implementa o `terraform plan` configurando os secrets `AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY` |
-| [`health-check.yml`](.github/workflows/health-check.yml) | `workflow_dispatch` (input `moodle_url`) | Torna `health-check.sh` executável e o roda contra a URL informada |
+| [`terraform-plan.yml`](.github/workflows/terraform-plan.yml) | PR para `main` (em `terraform/**`) e `workflow_dispatch` | Autentica com as credenciais do Learner Lab (incluindo o session token), roda `init`, `validate` e `plan -no-color`, comenta o plano no PR e falha se o `plan` der erro |
+| [`terraform-validate.yml`](.github/workflows/terraform-validate.yml) | push e PR para `main` | `terraform fmt -check -recursive` e `terraform validate` |
+| [`docker-lint.yml`](.github/workflows/docker-lint.yml) | push e PR em `docker/**` e `workflow_dispatch` | `hadolint` no Dockerfile (DL3008 ignorada) e `docker compose config` |
+| [`health-check.yml`](.github/workflows/health-check.yml) | `workflow_dispatch` com input `moodle_url` | Roda `scripts/health-check.sh` contra a URL informada |
 
-> Cada step dos workflows contém um comentário explicativo descrevendo o que a etapa faz.
+Secrets necessários em **Settings → Secrets and variables → Actions**:
 
-
-
-## Documentação
-
-Toda a documentação de apoio está em `docs/`:
-
-| Documento | Descrição |
+| Secret | Valor |
 |---|---|
-| [`docs/architecture-design-template.md`](docs/architecture-design-template.md) | Template para você preencher e entregar como `docs/architecture-design.md` (entrega obrigatória) |
-| [`docs/architecture.md`](docs/architecture.md) | Arquitetura de referência da solução AWS (gabarito para professores/monitores) |
-| [`docs/aws-learn-lab-setup.md`](docs/aws-learn-lab-setup.md) | Como obter credenciais temporárias do AWS Academy e as limitações do Learn Lab |
-| [`docs/terraform-guide.md`](docs/terraform-guide.md) | Guia de referência dos comandos Terraform (`init`, `plan`, `apply`, `destroy`) |
-| [`docs/troubleshooting.md`](docs/troubleshooting.md) | Problemas comuns (porta 8080, healthcheck do DB, credenciais expiradas, etc.) e soluções |
-| [`docs/evaluation-rubric.md`](docs/evaluation-rubric.md) | Rubrica de avaliação com critérios e pontuações |
-| [`docs/security-practices.md`](docs/security-practices.md) | Boas práticas de segurança (secrets, least privilege, estado do Terraform) |
+| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` | credenciais do Learner Lab (atualize a cada sessão) |
+| `TF_VAR_DB_PASSWORD` | senha do RDS |
+| `TF_VAR_SSH_ALLOWED_CIDR` | seu IP no formato `x.x.x.x/32` |
 
+Com o GitHub CLI, os três secrets da AWS podem ser atualizados direto do `~/.aws/credentials`:
+
+```bash
+R=CarinaDalpino/implement_Moodle
+gh secret set AWS_ACCESS_KEY_ID     --repo $R --body "$(aws configure get aws_access_key_id)"
+gh secret set AWS_SECRET_ACCESS_KEY --repo $R --body "$(aws configure get aws_secret_access_key)"
+gh secret set AWS_SESSION_TOKEN     --repo $R --body "$(aws configure get aws_session_token)"
+```
 
 
 ## Testes
 
-Os testes validam a estrutura e configuração do repositório usando **pytest** + **[Hypothesis](https://hypothesis.readthedocs.io/)** (property-based testing, 100 iterações por propriedade). Eles inspecionam o sistema de arquivos e **não** requerem infraestrutura AWS.
-
 ```bash
-# Instale as dependências (se ainda não tiver)
-pip install pytest hypothesis pyyaml
-
-# Rode todos os testes a partir da raiz do repositório
-pytest tests/ -v
+python3 -m venv ~/.venvs/moodle
+~/.venvs/moodle/bin/pip install pytest hypothesis pyyaml
+cd tests
+~/.venvs/moodle/bin/pytest -v
 ```
 
-Os testes cobrem, entre outros: extensões PHP obrigatórias no Dockerfile, ausência de credenciais literais no `docker-compose.yml`, padrões do `.gitignore`, estrutura dos módulos Terraform, comentários `# TODO:` nos arquivos de configuração, comentários nos steps dos workflows, seções do template de arquitetura e o comportamento do `health-check.sh`.
+Os testes inspecionam o repositório (extensões PHP do Dockerfile, credenciais no compose, `.gitignore`, estrutura dos módulos Terraform, comentários `# TODO:`, nomes dos steps dos workflows, seções do documento de arquitetura e o `health-check.sh`). Eles não precisam de AWS.
 
 
+## Evidências
 
-## Avaliação
+| Evidência | Arquivo |
+|---|---|
+| Moodle local e contêineres | [`docs/img/print-moodle.png`](docs/img/print-moodle.png), [`docs/img/docker.png`](docs/img/docker.png) |
+| `terraform fmt` e `validate` | [`docs/img/terraform-validate.png`](docs/img/terraform-validate.png) |
+| `terraform plan` | [`docs/img/terraform-plan.png`](docs/img/terraform-plan.png), [`docs/img/terraform-plan-inicio.png`](docs/img/terraform-plan-inicio.png) |
+| `terraform output` após o apply | [`docs/img/terraform-output.png`](docs/img/terraform-output.png) |
+| Moodle na EC2 | [`docs/img/moodle-aws.png`](docs/img/moodle-aws.png) |
+| Workflows no GitHub Actions | [`docs/img/github-actions.png`](docs/img/github-actions.png), [`docs/img/github-actions-plan.png`](docs/img/github-actions-plan.png) |
+| Comentário do plan no PR | [`docs/img/github-pr-comment.png`](docs/img/github-pr-comment.png) |
+| Health Check contra a EC2 | [`docs/img/github-health-check.png`](docs/img/github-health-check.png) |
 
-A avaliação do desafio segue a rubrica detalhada em [`docs/evaluation-rubric.md`](docs/evaluation-rubric.md), que pontua infraestrutura provisionada, Moodle acessível, segurança, documentação e o desenho técnico de arquitetura.
 
-> **Critério eliminatório:** a ausência do arquivo `docs/architecture-design.md` (gerado por você a partir de [`docs/architecture-design-template.md`](docs/architecture-design-template.md)) resulta em desclassificação automática, independentemente da pontuação nas demais categorias.
+## Documentação
+
+| Documento | Descrição |
+|---|---|
+| [`docs/architecture-design.md`](docs/architecture-design.md) | Arquitetura da solução: diagrama, componentes, segurança, escalabilidade e custo |
+| [`docs/aws-learn-lab-setup.md`](docs/aws-learn-lab-setup.md) | Credenciais e limitações do Learner Lab |
+| [`docs/terraform-guide.md`](docs/terraform-guide.md) | Referência dos comandos Terraform |
+| [`docs/security-practices.md`](docs/security-practices.md) | Boas práticas de segurança |
+| [`docs/troubleshooting.md`](docs/troubleshooting.md) | Problemas comuns e soluções |
+| [`docs/evaluation-rubric.md`](docs/evaluation-rubric.md) | Rubrica de avaliação |

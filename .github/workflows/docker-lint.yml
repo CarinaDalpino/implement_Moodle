@@ -1,12 +1,16 @@
 name: Docker Lint
 
+# Roda quando docker/ ou este workflow mudam, e manualmente pela aba Actions.
 on:
   push:
     paths:
       - 'docker/**'
+      - '.github/workflows/docker-lint.yml'
   pull_request:
     paths:
       - 'docker/**'
+      - '.github/workflows/docker-lint.yml'
+  workflow_dispatch:
 
 jobs:
   docker-lint:
@@ -20,8 +24,16 @@ jobs:
       # Executa o hadolint para análise estática do Dockerfile e verifica boas práticas
       # TODO: adicione flags --ignore <RULE> aqui se quiser suprimir regras específicas,
       #       ex: docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 -
+      # DL3008 (fixar versão de cada pacote apt) é ignorada: o Debian remove versões
+      # antigas dos repositórios e o build quebraria. Sugestões de nível info
+      # (ex.: DL3059) aparecem no log, mas não reprovam o workflow.
       - name: Lint do Dockerfile com hadolint
-        run: docker run --rm -i hadolint/hadolint < docker/Dockerfile
+        run: docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 --failure-threshold warning - < docker/Dockerfile
+
+      # Cria o docker/.env a partir do exemplo, pois o .env real não é versionado
+      # e o `docker compose config` exige o arquivo referenciado em env_file
+      - name: Criar docker/.env a partir do exemplo
+        run: cp docker/.env.example docker/.env
 
       # Valida a sintaxe e a integridade do docker-compose.yml sem subir os serviços
       # TODO: se você tiver um ambiente de testes disponível, pode estender este step

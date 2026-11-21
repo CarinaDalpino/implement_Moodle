@@ -1,0 +1,94 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Trocar `.env.example` por `.env` nos serviços `db` e `moodle`": [
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222061369
+      },
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222069326
+      },
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222099788
+      }
+    ],
+    "2.1 Adicionar step que cria `docker/.env` antes de validar o compose": [
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222061507
+      },
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222070020
+      },
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222100360
+      }
+    ],
+    "3.1 Conferir testes, `.gitignore` e README": [
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222064038
+      },
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222102730
+      },
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222126841
+      }
+    ],
+    "4. Checkpoint final: validar testes e compose": [
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222064116
+      },
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222129503
+      },
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222221752
+      }
+    ],
+    "1. Corrigir `env_file` no docker-compose.yml": [
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222099866
+      }
+    ],
+    "2. Ajustar o workflow de lint": [
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222100418
+      }
+    ],
+    "3. Conferir consistência do repositório": [
+      {
+        "executionId": "5109c747-cb7c-46cc-93bd-af04a4e4f8b2",
+        "chatSessionId": "sess_73a90eb3-24a0-4302-b25a-4cc982815dd3",
+        "timestamp": 1795222126918
+      }
+    ]
+  }
+}

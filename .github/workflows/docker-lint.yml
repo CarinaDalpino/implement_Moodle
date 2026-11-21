@@ -30,6 +30,11 @@ jobs:
       - name: Lint do Dockerfile com hadolint
         run: docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 --failure-threshold warning - < docker/Dockerfile
 
+      # Cria o docker/.env a partir do exemplo, pois o .env real não é versionado
+      # e o `docker compose config` exige o arquivo referenciado em env_file
+      - name: Criar docker/.env a partir do exemplo
+        run: cp docker/.env.example docker/.env
+
       # Valida a sintaxe e a integridade do docker-compose.yml sem subir os serviços
       # TODO: se você tiver um ambiente de testes disponível, pode estender este step
       #       executando `docker compose -f docker/docker-compose.yml up --build -d`
